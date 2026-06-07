@@ -23,13 +23,13 @@ public class Post {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "body", nullable = false,length = 1000)
+    @Column(name = "body", nullable = false,length = 2000)
     private String body;
 
-    @Column(name = "board_id", nullable = false,length = 1000)
+    @Column(name = "board_id", nullable = false)
     private String boardId;
 
-    @Column(name = "user_id", nullable = false,length = 1000)
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
     @Column(name = "create_at")
