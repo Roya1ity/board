@@ -5,6 +5,9 @@ spring:
   application:
     name: board
 
+jwt:
+  secret: c2hvd19tZV90aGVfbW9uZXlfcG93ZXJfb3Zlcl93aGVsbWluZw==
+
   datasource:
     url: jdbc:mysql://localhost:3306/board?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
@@ -21,3 +24,4 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+
