@@ -1,4 +1,4 @@
-package com.example.board.auth;
+package com.example.board.user;
 
 import com.example.board.Global.Entity.User;
 import com.example.board.Global.Entity.UserProfile;

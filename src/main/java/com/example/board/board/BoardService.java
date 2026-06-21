@@ -4,16 +4,13 @@ package com.example.board.board;
 import com.example.board.Global.Entity.Board;
 import com.example.board.Global.Entity.User;
 import com.example.board.Global.IngestResult;
-import com.example.board.Global.exception.BusinessException;
 import com.example.board.Global.exception.ErrorCode;
 import com.example.board.Global.exception.ForbidenException;
 import com.example.board.Global.exception.NotFoundUserException;
 import com.example.board.auth.UserRepository;
-import com.example.board.board.dto.BoardDTO;
 import com.example.board.board.dto.BoardRequest;
 import com.example.board.board.dto.BoardResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

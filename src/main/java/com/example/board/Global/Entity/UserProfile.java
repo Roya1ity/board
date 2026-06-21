@@ -1,5 +1,6 @@
 package com.example.board.Global.Entity;
 
+import com.example.board.user.dto.UserProfileDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -48,4 +49,14 @@ public class UserProfile {
     @Builder.Default
     @LastModifiedDate
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public static UserProfileDTO toDTO(UserProfile userProfile) {
+        UserProfileDTO res = new UserProfileDTO();
+        res.setName(userProfile.getName());
+        res.setNumber(userProfile.getNumber());
+        res.setBirth(userProfile.getBirth());
+        res.setCreateAt(userProfile.getCreateAt().toString());
+
+        return res;
+    }
 }

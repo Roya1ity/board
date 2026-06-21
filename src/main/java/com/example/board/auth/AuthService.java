@@ -10,10 +10,15 @@ import com.example.board.Global.exception.UnauthorizedException;
 import com.example.board.auth.dto.LoginRequest;
 import com.example.board.auth.dto.SignupRequest;
 import com.example.board.auth.dto.UserResponse;
+import com.example.board.auth.jwt.JwtTokenProvider;
+import com.example.board.user.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.board.auth.jwt.JwtAuthenticationFilter.BEARER;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +26,10 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
+    @Value("${jwt.access-token-validity-seconds}")
+    private long accessTokenValiditySeconds;
 
     @Transactional
     public IngestResult signUp(SignupRequest req) {
@@ -54,11 +62,14 @@ public class AuthService {
             throw new UnauthorizedException(ErrorCode.LOGIN_FAILED);
         }
 
+        String accessToken = jwtTokenProvider.createToken(user.getId());
+
         UserResponse res = new UserResponse();
         res.setId(user.getId());
         res.setEmail(user.getEmail());
         res.setNick(user.getNick());
         res.setRole(user.getRole().toString());
+        res.setAccessToken(BEARER+accessToken);
 
         //return new IngestResult("OK","로그인 성공");
         return res;

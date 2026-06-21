@@ -26,23 +26,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody LoginRequest req, HttpSession session) {
+    public ResponseEntity login(@Valid @RequestBody LoginRequest req) {
         UserResponse res = authService.login(req);
-
-        session.setAttribute(LOGIN_USER_ID,res.getId());
-        Long id = (Long)session.getAttribute(LOGIN_USER_ID);
-        System.out.println("로그인 처리: " + id);
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
     @PostMapping("/logout")
     public void logdout(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            Long id = (Long)session.getAttribute(LOGIN_USER_ID);
-            System.out.println("로그아웃 처리: " + id);
-            session.invalidate(); // 세션 클리어
-        }
+
     }
 }

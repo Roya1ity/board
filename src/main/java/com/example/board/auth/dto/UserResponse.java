@@ -15,5 +15,6 @@ public class UserResponse {
     private Long id;
     private String email;
     private String nick;
-    private String role;
+    private String accessToken;
+    private String role; //디버그용
 }

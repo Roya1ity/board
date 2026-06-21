@@ -2,6 +2,7 @@ package com.example.board.post;
 
 import com.example.board.Global.IngestResult;
 import com.example.board.auth.AuthController;
+import com.example.board.auth.LoginUserId;
 import com.example.board.post.dto.PostRequest;
 import com.example.board.post.dto.PostDTO;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ public class PostController {
 
     @PostMapping("/{boardId}/new")
     public PostDTO create(
-            @SessionAttribute(name = AuthController.LOGIN_USER_ID,required = false) Long loginUserId,
+            @LoginUserId Long loginUserId,
             @PathVariable Long boardId,
             @Valid @RequestBody PostRequest req
     ) {
@@ -39,7 +40,7 @@ public class PostController {
 
     @PutMapping("/{id}/update")
     public PostDTO update(
-            @SessionAttribute(name = AuthController.LOGIN_USER_ID,required = false) Long loginUserId,
+            @LoginUserId Long loginUserId,
             @PathVariable Long id,
             @Valid @RequestBody PostRequest req
     ) {
@@ -48,7 +49,7 @@ public class PostController {
 
     @DeleteMapping("/{id}/delete")
     public IngestResult delete(
-            @SessionAttribute(name = AuthController.LOGIN_USER_ID,required = false) Long loginUserId,
+            @LoginUserId Long loginUserId,
             @PathVariable Long id
     ) {
         return postService.delete(loginUserId,id);

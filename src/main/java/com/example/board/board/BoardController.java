@@ -3,6 +3,7 @@ package com.example.board.board;
 
 import com.example.board.Global.IngestResult;
 import com.example.board.auth.AuthController;
+import com.example.board.auth.LoginUserId;
 import com.example.board.board.dto.BoardRequest;
 import com.example.board.board.dto.BoardResponse;
 import jakarta.validation.Valid;
@@ -19,7 +20,7 @@ public class BoardController {
 
     @PostMapping("/new")
     public BoardResponse create(
-            @SessionAttribute(name = AuthController.LOGIN_USER_ID,required = false) Long loginUserId,
+            @LoginUserId Long loginUserId,
             @Valid @RequestBody BoardRequest req
     ) {
         return boardService.create(loginUserId,req);
@@ -33,7 +34,7 @@ public class BoardController {
 
     @PutMapping("/{id}/update")
     public BoardResponse update(
-            @SessionAttribute(name = AuthController.LOGIN_USER_ID,required = false) Long loginUserId,
+            @LoginUserId Long loginUserId,
             @PathVariable Long id,
             @RequestBody BoardRequest req) {
 
@@ -42,7 +43,7 @@ public class BoardController {
 
     @DeleteMapping("/{id}/delete")
     public IngestResult delete(
-            @SessionAttribute(name = AuthController.LOGIN_USER_ID,required = false) Long loginUserId,
+            @LoginUserId Long loginUserId,
             @PathVariable Long id) {
 
         return boardService.delete(loginUserId,id);
