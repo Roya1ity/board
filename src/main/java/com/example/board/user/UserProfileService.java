@@ -27,11 +27,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
     public UserProfileDTO me(Long loginUserId) {
-        UserProfile user = userProfileRepository.findById(loginUserId).orElseThrow(()->new NotFoundUserException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(loginUserId).orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
 
-        UserProfileDTO res = UserProfile.toDTO(user);
+        UserProfile userProfile = userProfileRepository.findbyUser(user).orElseThrow(()->new NotFoundUserException(ErrorCode.USER_NOT_FOUND));
+
+        UserProfileDTO res = UserProfile.toDTO(userProfile);
 
         return res;
     }
