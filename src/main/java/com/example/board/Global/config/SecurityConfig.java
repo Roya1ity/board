@@ -1,10 +1,14 @@
 package com.example.board.Global.config;
 
+import com.example.board.Global.Entity.User;
 import com.example.board.auth.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -27,16 +34,35 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)              // CSRF 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)     // Spring Security Form Login 기능 사용하지 않음
                 .httpBasic(AbstractHttpConfigurer::disable)     // Spring Security Form Login 기능 사용하지 않음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 처리
-                // 모든 요청을 무조건 허용한다
-                .authorizeHttpRequests(auth->auth.anyRequest().permitAll())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        log.debug("SecurityConfig::securityFilterChain 처리됨");
+                .authorizeHttpRequests(auth-> auth
+                        // 공개 : 인증/회원가입/로그아웃/게시글 조회
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/board/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/post/**").permitAll()
+                        // 인증시 요청가능
+                        .requestMatchers(HttpMethod.GET,"/api/user/me").authenticated()
+                        // 권한있어야 요청가능
+                        .requestMatchers(HttpMethod.POST,"/api/board/**").hasRole(User.Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT,"/api/board/**").hasRole(User.Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE,"/api/board/**").hasRole(User.Role.ADMIN.name())
+                        .anyRequest().authenticated()
+                )
+                // 401(Unauthorized), 403(Forbidden)
+                .exceptionHandling(e->e
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }

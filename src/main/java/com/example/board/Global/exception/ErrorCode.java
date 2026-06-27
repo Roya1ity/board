@@ -14,6 +14,7 @@ public enum ErrorCode {
     DUPLICATE_USER_EMAIL(HttpStatus.CONFLICT,"이미 사용중인 이메일"),
     DUPLICATE_BOARD_NAME(HttpStatus.CONFLICT,"이미 사용중인 게시판이름"),
 
+    ACCESS_DENIED(HttpStatus.FORBIDDEN,"권한이 없음"),
     POST_ACCESS_DENIED(HttpStatus.FORBIDDEN,"게시글 작성 권한이 없음"),
     BOARD_ACCESS_DENIED(HttpStatus.FORBIDDEN,"게시판 생성 권한이 없음"),
 

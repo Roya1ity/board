@@ -60,19 +60,25 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostDTO> list() {
-
         return postRepository.findAll().stream().map(Post::toDTO).toList();
     }
 
     @Transactional(readOnly = true)
-    public PostDTO read(Long id) {
-        return Post.toDTO(postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND)));
+    public List<PostDTO> currentBoardList(Long boardId) {
+        return postRepository.findByBoardId(boardId).stream().map(Post::toDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PostDTO read(Long loginUserId, Long id) {
+        Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
+
+        return Post.toDTO(post,loginUserId);
     }
 
     @Transactional
     public PostDTO update(Long loginUserId,Long id,@Valid PostRequest req) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
-
+        validateAuthor(post,loginUserId);
         User user = post.getUser();
 
         if (!Objects.equals(user.getId(),loginUserId)) {
@@ -90,6 +96,7 @@ public class PostService {
     @Transactional
     public IngestResult delete(Long loginUserId,Long id) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
+        validateAuthor(post,loginUserId);
         User user = post.getUser();
 
         if (!Objects.equals(user.getId(),loginUserId)) {
@@ -99,5 +106,11 @@ public class PostService {
         postRepository.deleteById(id);
 
         return new IngestResult("OK","삭제완료");
+    }
+
+    private void validateAuthor(Post post, Long userid) {
+        if (!post.isAuthor(userid)) {
+            throw new ForbidenException(ErrorCode.POST_ACCESS_DENIED);
+        }
     }
 }

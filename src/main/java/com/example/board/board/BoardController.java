@@ -20,10 +20,9 @@ public class BoardController {
 
     @PostMapping("/new")
     public BoardResponse create(
-            @LoginUserId Long loginUserId,
             @Valid @RequestBody BoardRequest req
     ) {
-        return boardService.create(loginUserId,req);
+        return boardService.create(req);
     }
 
     @GetMapping("/all")
@@ -34,18 +33,16 @@ public class BoardController {
 
     @PutMapping("/{id}/update")
     public BoardResponse update(
-            @LoginUserId Long loginUserId,
             @PathVariable Long id,
             @RequestBody BoardRequest req) {
 
-        return boardService.update(loginUserId,id,req);
+        return boardService.update(id,req);
     }
 
     @DeleteMapping("/{id}/delete")
     public IngestResult delete(
-            @LoginUserId Long loginUserId,
             @PathVariable Long id) {
 
-        return boardService.delete(loginUserId,id);
+        return boardService.delete(id);
     }
 }

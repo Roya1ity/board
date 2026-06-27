@@ -18,5 +18,6 @@ public class PostDTO {
     private String board;
     private String body;
     private String createAt;
-
+    private boolean canEdit;
+    private boolean canDelete;
 }

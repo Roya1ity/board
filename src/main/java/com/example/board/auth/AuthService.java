@@ -5,7 +5,6 @@ import com.example.board.Global.Entity.UserProfile;
 import com.example.board.Global.IngestResult;
 import com.example.board.Global.exception.DuplicateUserException;
 import com.example.board.Global.exception.ErrorCode;
-import com.example.board.Global.exception.NotFoundUserException;
 import com.example.board.Global.exception.UnauthorizedException;
 import com.example.board.auth.dto.LoginRequest;
 import com.example.board.auth.dto.SignupRequest;
@@ -14,6 +13,10 @@ import com.example.board.auth.jwt.JwtTokenProvider;
 import com.example.board.user.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ public class AuthService {
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Value("${jwt.access-token-validity-seconds}")
     private long accessTokenValiditySeconds;
@@ -53,23 +57,27 @@ public class AuthService {
 
     @Transactional
     public UserResponse login(LoginRequest req) {
-        if (!userRepository.existsByEmail(req.getEmail())) {
-            //return new IngestResult("error","해당 이메일 정보가 존재하지 않음");
-        }
-        User user = userRepository.findByEmail(req.getEmail()).orElseThrow(() -> new NotFoundUserException(ErrorCode.USER_NOT_FOUND));
-
-        if (!passwordEncoder.matches(req.getPw(),user.getPw())) {
-            throw new UnauthorizedException(ErrorCode.LOGIN_FAILED);
-        }
-
-        String accessToken = jwtTokenProvider.createToken(user.getId());
 
         UserResponse res = new UserResponse();
-        res.setId(user.getId());
-        res.setEmail(user.getEmail());
-        res.setNick(user.getNick());
-        res.setRole(user.getRole().toString());
-        res.setAccessToken(BEARER+accessToken);
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getEmail(),req.getPw())
+            );
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            String accessToken = jwtTokenProvider.createToken(userDetails.getUsername());
+
+            res.setId(userDetails.getId());
+            res.setEmail(userDetails.getUsername());
+            res.setNick(userDetails.getNick());
+            //res.setRole(userDetails.getAuthorities());
+            res.setAccessToken(BEARER+accessToken);
+        }
+        catch (AuthenticationException e) {
+            throw new UnauthorizedException(ErrorCode.LOGIN_REQUIRED);
+        }
+
+
 
         //return new IngestResult("OK","로그인 성공");
         return res;

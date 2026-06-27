@@ -32,9 +32,9 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponse create(Long loginUserId, BoardRequest req) {
+    public BoardResponse create(BoardRequest req) {
 
-        validateUser(loginUserId);
+        //validateUser(loginUserId);
 
         if (boardRepository.existsByName(req.getName())) {
             throw new ForbidenException(ErrorCode.DUPLICATE_BOARD_NAME);
@@ -60,8 +60,8 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponse update(Long loginUserId,Long boardId, BoardRequest req) {
-        validateUser(loginUserId);
+    public BoardResponse update(Long boardId, BoardRequest req) {
+        //validateUser(loginUserId);
 
         Board board = boardRepository.findById(boardId).orElseThrow(()->new NotFoundUserException(ErrorCode.BOARD_NOT_FOUND));
         board.setName(req.getName());
@@ -78,8 +78,8 @@ public class BoardService {
     }
 
     @Transactional
-    public IngestResult delete(Long loginUserId,Long boardId) {
-        validateUser(loginUserId);
+    public IngestResult delete(Long boardId) {
+        //validateUser(loginUserId);
 
         if (!boardRepository.existsById(boardId)) {
             throw new NotFoundUserException(ErrorCode.BOARD_NOT_FOUND);

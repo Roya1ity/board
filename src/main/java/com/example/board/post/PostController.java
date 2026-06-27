@@ -2,11 +2,13 @@ package com.example.board.post;
 
 import com.example.board.Global.IngestResult;
 import com.example.board.auth.AuthController;
+import com.example.board.auth.CustomUserDetails;
 import com.example.board.auth.LoginUserId;
 import com.example.board.post.dto.PostRequest;
 import com.example.board.post.dto.PostDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +21,12 @@ public class PostController {
 
     @PostMapping("/{boardId}/new")
     public PostDTO create(
-            @LoginUserId Long loginUserId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long boardId,
             @Valid @RequestBody PostRequest req
     ) {
 
-        return postService.create(loginUserId,boardId,req);
+        return postService.create(userDetails.getId(),boardId,req);
     }
 
     @GetMapping("/all")
@@ -33,25 +35,33 @@ public class PostController {
         return postService.list();
     }
 
+    @GetMapping("/{boardId}/all")
+    public List<PostDTO> currentBoardList(@PathVariable Long boardId) {
+
+        return postService.currentBoardList(boardId);
+    }
+
     @GetMapping("/{id}")
-    public PostDTO read(@PathVariable long id) {
-        return postService.read(id);
+    public PostDTO read(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable long id) {
+        return postService.read(userDetails.getId(),id);
     }
 
     @PutMapping("/{id}/update")
     public PostDTO update(
-            @LoginUserId Long loginUserId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long id,
             @Valid @RequestBody PostRequest req
     ) {
-        return postService.update(loginUserId,id,req);
+        return postService.update(userDetails.getId(),id,req);
     }
 
     @DeleteMapping("/{id}/delete")
     public IngestResult delete(
-            @LoginUserId Long loginUserId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long id
     ) {
-        return postService.delete(loginUserId,id);
+        return postService.delete(userDetails.getId(),id);
     }
 }

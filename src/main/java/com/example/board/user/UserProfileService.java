@@ -32,7 +32,7 @@ public class UserProfileService {
     public UserProfileDTO me(Long loginUserId) {
         User user = userRepository.findById(loginUserId).orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
 
-        UserProfile userProfile = userProfileRepository.findbyUser(user).orElseThrow(()->new NotFoundUserException(ErrorCode.USER_NOT_FOUND));
+        UserProfile userProfile = userProfileRepository.findByUser(user).orElseThrow(()->new NotFoundUserException(ErrorCode.USER_NOT_FOUND));
 
         UserProfileDTO res = UserProfile.toDTO(userProfile);
 
