@@ -1,6 +1,6 @@
 package com.example.board.auth.dto;
 
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class RefreshTokenRequest {
 
-    private Long id;
-    private String email;
-    private String nick;
-    private String accessToken;
+    @NotBlank
     private String refreshToken;
-    private String role; //디버그용
 }

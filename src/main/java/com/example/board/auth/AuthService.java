@@ -1,5 +1,6 @@
 package com.example.board.auth;
 
+import com.example.board.Global.Entity.RefreshToken;
 import com.example.board.Global.Entity.User;
 import com.example.board.Global.Entity.UserProfile;
 import com.example.board.Global.IngestResult;
@@ -8,6 +9,7 @@ import com.example.board.Global.exception.ErrorCode;
 import com.example.board.Global.exception.UnauthorizedException;
 import com.example.board.auth.dto.LoginRequest;
 import com.example.board.auth.dto.SignupRequest;
+import com.example.board.auth.dto.TokenResponse;
 import com.example.board.auth.dto.UserResponse;
 import com.example.board.auth.jwt.JwtTokenProvider;
 import com.example.board.user.UserProfileRepository;
@@ -21,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import static com.example.board.auth.jwt.JwtAuthenticationFilter.BEARER;
 
 @Service
@@ -31,9 +36,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.access-token-validity-seconds}")
     private long accessTokenValiditySeconds;
+
+    @Value("${jwt.refressh-token-validity-seconds}")
+    private long refreshTokenValiditySeconds;
 
     @Transactional
     public IngestResult signUp(SignupRequest req) {
@@ -66,12 +75,14 @@ public class AuthService {
             );
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             String accessToken = jwtTokenProvider.createToken(userDetails.getUsername());
+            String refreshToken = issueRefreshToken(userDetails.getId());
 
             res.setId(userDetails.getId());
             res.setEmail(userDetails.getUsername());
             res.setNick(userDetails.getNick());
             //res.setRole(userDetails.getAuthorities());
             res.setAccessToken(BEARER+accessToken);
+            res.setRefreshToken(refreshToken);
         }
         catch (AuthenticationException e) {
             throw new UnauthorizedException(ErrorCode.LOGIN_REQUIRED);
@@ -83,8 +94,43 @@ public class AuthService {
         return res;
     }
 
-    public boolean logout() {
+    @Transactional
+    public void logout(String refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken)
+                .ifPresent(saved -> refreshTokenRepository.deleteByToken(saved.getToken()));
+    }
 
-        return true;
+    @Transactional
+    public String issueRefreshToken(Long userId) {
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenValiditySeconds);
+        refreshTokenRepository.findByUserId(userId)
+                .ifPresentOrElse(
+                        exist -> exist.update(token,expiresAt),
+                        ()-> refreshTokenRepository.save((new RefreshToken(userId,token,expiresAt)))
+                );
+
+        return token;
+    }
+
+    @Transactional
+    public TokenResponse reIssueToken(String refreshToken) {
+        RefreshToken saved = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
+        if (saved.isExpired()) {
+            refreshTokenRepository.deleteByToken(refreshToken);
+            throw new UnauthorizedException(ErrorCode.LOGIN_REQUIRED);
+        }
+
+        User user = userRepository.findById(saved.getUserId())
+                .orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
+
+        String newAccessToken = jwtTokenProvider.createToken(user.getEmail());
+
+        TokenResponse res = new TokenResponse();
+        res.setAccessToken(newAccessToken);
+        res.setRefreshToken(refreshToken);
+
+        return res;
     }
 }

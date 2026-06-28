@@ -25,6 +25,14 @@ spring:
 jwt:
   secret: c2hvd19tZV90aGVfbW9uZXlfcG93ZXJfb3Zlcl93aGVsbWluZw==
   access-token-validity-seconds: 3600 #1시간
+  refressh-token-validity-seconds: 36000
+
+app:
+  refresh-cookie:
+    name: refreshToken
+    secure: false
+    same-site: Strict
+    path: /api/auth
 
 logging:
   level:

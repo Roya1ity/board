@@ -76,14 +76,14 @@ public class PostService {
     }
 
     @Transactional
-    public PostDTO update(Long loginUserId,Long id,@Valid PostRequest req) {
+    public PostDTO update(Long id,@Valid PostRequest req) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
-        validateAuthor(post,loginUserId);
-        User user = post.getUser();
-
-        if (!Objects.equals(user.getId(),loginUserId)) {
-            throw new ForbidenException(ErrorCode.POST_ACCESS_DENIED);
-        }
+//        validateAuthor(post,loginUserId);
+//        User user = post.getUser();
+//
+//        if (!Objects.equals(user.getId(),loginUserId)) {
+//            throw new ForbidenException(ErrorCode.POST_ACCESS_DENIED);
+//        }
 
         post.setTitle(req.getTitle());
         post.setBody(req.getBody());
@@ -94,14 +94,14 @@ public class PostService {
     }
 
     @Transactional
-    public IngestResult delete(Long loginUserId,Long id) {
+    public IngestResult delete(Long id) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
-        validateAuthor(post,loginUserId);
-        User user = post.getUser();
-
-        if (!Objects.equals(user.getId(),loginUserId)) {
-            throw new ForbidenException(ErrorCode.POST_ACCESS_DENIED);
-        }
+//        validateAuthor(post,loginUserId);
+//        User user = post.getUser();
+//
+//        if (!Objects.equals(user.getId(),loginUserId)) {
+//            throw new ForbidenException(ErrorCode.POST_ACCESS_DENIED);
+//        }
 
         postRepository.deleteById(id);
 
