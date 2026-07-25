@@ -1,0 +1,12 @@
+http://localhost:8099/api/post/1/new
+
+multipart 데이터 전송
+part1:application/json {"title":"asd","body","asd123"}
+part2:multipart/form image file들
+
+os: 윈도우
+위 request를 테스트할 수 있는 curl 명령어를 만들어줘
+
+curl -X POST "http://localhost:8099/api/post/1/new" ^
+  -F "request={\"title\":\"asd\",\"body\":\"asd123\"};type=application/json" ^
+  -F "files=@C:\Users\User\Pictures\Saved Pictures\faker1.webp"
