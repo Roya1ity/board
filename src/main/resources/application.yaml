@@ -5,6 +5,37 @@ spring:
   application:
     name: board
 
+<<<<<<< Updated upstream
+=======
+  config:
+    import: optional:file:.env[.properties]
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_REST_API}
+            client-secret: ${KAKAO_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            scope: profile_nickname
+
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            scope: openid,profile,email
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+>>>>>>> Stashed changes
   datasource:
     url: jdbc:mysql://localhost:3306/board?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
@@ -22,12 +53,49 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
+<<<<<<< Updated upstream
 jwt:
   secret: c2hvd19tZV90aGVfbW9uZXlfcG93ZXJfb3Zlcl93aGVsbWluZw==
   access-token-validity-seconds: 3600 #1시간
+=======
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+
+jwt:
+  secret: c2hvd19tZV90aGVfbW9uZXlfcG93ZXJfb3Zlcl93aGVsbWluZw==
+  access-token-validity-seconds: 3600 #1시간
+  refressh-token-validity-seconds: 36000
+
+app:
+  refresh-cookie:
+    name: refreshToken
+    secure: false
+    same-site: Strict
+    path: /api/auth
+
+  upload:
+    dir: ${APP_UPLOAD_DIR:./uploads}
+
+
+  oauth:
+    kakao:
+      appkey: ${KAKAO_REST_API}
+      secret: ${KAKAO_SECRET}
+      callback: ${KAKAO_CALLBACK}
+      authorize-uri: https://kauth.kakao.com/oauth/authorize
+      token-uri: https://kauth.kakao.com/oauth/token
+      user-info: https://kapi.kakao.com/v2/user/me
+>>>>>>> Stashed changes
 
 logging:
   level:
     com.example.board: DEBUG
     org.springframework.web.client: DEBUG
+<<<<<<< Updated upstream
     org.springframework.security.web.FilterChainProxy: DEBUG
+=======
+    org.springframework.security.web.FilterChainProxy: DEBUG
+
+>>>>>>> Stashed changes
