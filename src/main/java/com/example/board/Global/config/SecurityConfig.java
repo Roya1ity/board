@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/oauth/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/board/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/post/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/comment/**").permitAll()
                         // 인증시 요청가능
                         .requestMatchers(HttpMethod.GET,"/api/user/me").authenticated()
                         // 권한있어야 요청가능

@@ -21,7 +21,7 @@ public class BoardController {
     private final BoardService boardService;
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
     public BoardResponse create(
             @Valid @RequestBody BoardRequest req

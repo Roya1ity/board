@@ -10,6 +10,7 @@ import com.example.board.post.dto.PostRequest;
 import com.example.board.post.dto.PostDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/post")
@@ -36,6 +38,7 @@ public class PostController {
             @Valid @RequestPart("post") PostRequest post,
             @RequestPart(value = "images",required = false) List<MultipartFile> images
     ) {
+        log.debug("호출은 됨");
         validateImageCount(images);
         return postService.create(userDetails.getId(),boardId,post,images);
     }

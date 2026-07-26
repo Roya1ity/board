@@ -91,9 +91,13 @@ public class PostService {
         return postRepository.findByBoardId(boardId,page).map(Post::toDTO);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDTO read(Long loginUserId, Long id) {
         Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
+
+        if (!post.isAuthor(loginUserId)) {
+            post.increaseViewCount();
+        }
 
         return Post.toDTO(post,loginUserId);
     }

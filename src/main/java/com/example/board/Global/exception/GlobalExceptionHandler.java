@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -36,6 +37,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxUploadSizerror(MaxUploadSizeExceededException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.of(ErrorCode.MAX_UPLOAD_SIZE_EXCEEDED));
+    }
+
+    @ExceptionHandler(HttpClientErrorException.MethodNotAllowed.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotAllowedError(HttpClientErrorException.MethodNotAllowed e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED));
     }
 
 //    @ExceptionHandler(NotFoundUserException.class)

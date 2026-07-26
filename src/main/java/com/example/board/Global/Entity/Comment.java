@@ -51,9 +51,9 @@ public class Comment {
     @Column(nullable = false)
     private boolean deleted;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     @Builder.Default
@@ -95,7 +95,7 @@ public class Comment {
                 comment.getUser().getNick(),
                 comment.isDeleted() ? DELETED_CONTENT : comment.getContent(),
                 comment.isDeleted(),
-                comment.getCreateAt(),
+                comment.getCreatedAt(),
                 children
         );
     }

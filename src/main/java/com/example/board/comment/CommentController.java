@@ -8,6 +8,7 @@ import com.example.board.post.dto.PostDTO;
 import com.example.board.post.dto.PostRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,12 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comment")
 public class CommentController {
 
-    private CommentService commentService;
+    private final CommentService commentService;
 
     @PostMapping("/{postId}/new")
     public CommentResponse create(
@@ -34,6 +36,7 @@ public class CommentController {
             @PathVariable Long postId,
             @Valid @RequestBody CommentCreateRequest req
     ) {
+
         return commentService.create(userDetails.getId(),postId,req);
     }
 
@@ -47,7 +50,7 @@ public class CommentController {
     }
 
     @PreAuthorize("@commentSecurity.isAuthor(#commentId, authentication.principal)")
-    @PutMapping("/{commentId}")
+    @PutMapping("/{commentId}/update")
     public CommentResponse update(
             @PathVariable Long commentId,
             @Valid @RequestBody CommentCreateRequest req
@@ -58,7 +61,7 @@ public class CommentController {
     }
 
     @PreAuthorize("@commentSecurity.isAuthor(#commentId, authentication.principal)")
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/{commentId}/delete")
     public ResponseEntity<Void> delete(@PathVariable Long commentId) {
 
         commentService.delete(commentId);

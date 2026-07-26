@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
   <component name="AdditionalModuleElements">
-    <content url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main">
+    <content url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main" dumb="true">
       <sourceFolder url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main" isTestSource="false" generated="true" />
     </content>
   </component>
   <component name="FacetManager">
-    <facet type="web" name="Web">
+    <facet type="jpa" name="JPA">
       <configuration>
-        <webroots />
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main" />
-          <root url="file://$MODULE_DIR$/../../src/main/java" />
-          <root url="file://$MODULE_DIR$/../../src/main/resources" />
-        </sourceRoots>
+        <setting name="validation-enabled" value="true" />
+        <datasource-mapping />
+        <naming-strategy-map />
       </configuration>
     </facet>
   </component>

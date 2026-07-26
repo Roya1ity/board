@@ -31,6 +31,12 @@ public enum ErrorCode {
     FILE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST,"파일 업로드 개수 초과"),
     MAX_UPLOAD_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST,"파일 용량 초과"),
 
+    CANNOT_COMMENT(HttpStatus.INTERNAL_SERVER_ERROR,"댓글 작성 불가"),
+    CANNOT_VIEW_NOTIFICATION(HttpStatus.FORBIDDEN,"해당 알림의 소유자만 조회 가능"),
+
+    METHOD_NOT_ALLOWED(HttpStatus.BAD_REQUEST,"어쩌구저쩌구"),
+
+
     SQL_INTERGRITY_ERROR(HttpStatus.BAD_REQUEST,"DB 참조 무결성 에러"),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"알 수 없는 내부 서버 에러");
