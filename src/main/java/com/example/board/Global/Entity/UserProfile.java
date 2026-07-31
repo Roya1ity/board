@@ -41,9 +41,9 @@ public class UserProfile {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     @Builder.Default
@@ -55,7 +55,7 @@ public class UserProfile {
         res.setName(userProfile.getName());
         res.setNumber(userProfile.getNumber());
         res.setBirth(userProfile.getBirth());
-        res.setCreateAt(userProfile.getCreateAt().toString());
+        res.setCreateAt(userProfile.getCreatedAt().toString());
 
         return res;
     }

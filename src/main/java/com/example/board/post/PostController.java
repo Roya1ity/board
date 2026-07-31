@@ -66,7 +66,8 @@ public class PostController {
     public PostDTO read(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable long id) {
-        return postService.read(userDetails.getId(),id);
+        Long loginUserId = userDetails == null ? null : userDetails.getId();
+        return postService.read(loginUserId,id);
     }
 
     @PreAuthorize("@postSecurity.isAuthor(#id, authentication.principal)")

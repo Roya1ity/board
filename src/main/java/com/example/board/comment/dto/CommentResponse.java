@@ -14,7 +14,9 @@ public record CommentResponse(
         String content,
         boolean deleted,
         LocalDateTime createdAt,
+        boolean canEdit,
+        boolean canDelete,
         List<CommentResponse> children
 ) {
-    public static final String DELETED_CONTENT = "삭제된 게시글입니다";
+    public static final String DELETED_CONTENT = "삭제된 댓글입니다.";
 }

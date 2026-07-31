@@ -41,16 +41,16 @@ public class Post {
     private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("sortOder asc")
+    @OrderBy("sortOrder asc")
     @BatchSize(size=100)
     private List<PostImage> images = new ArrayList<>();
 
     @Column(nullable = false)
     private long viewCount;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     @Builder.Default
@@ -66,7 +66,7 @@ public class Post {
         dto.setUser(post.getUser().getNick());
         dto.setBoard(post.getBoard().getName());
         dto.setBody(post.getBody());
-        dto.setCreateAt(post.getCreateAt().toString());
+        dto.setCreateAt(post.getCreatedAt().toString());
         dto.setCanEdit(owner);
         dto.setCanDelete(owner);
 
@@ -85,7 +85,7 @@ public class Post {
         dto.setUser(post.getUser().getNick());
         dto.setBoard(post.getBoard().getName());
         dto.setBody(post.getBody());
-        dto.setCreateAt(post.getCreateAt().toString());
+        dto.setCreateAt(post.getCreatedAt().toString());
         dto.setCanEdit(false);
         dto.setCanDelete(false);
 

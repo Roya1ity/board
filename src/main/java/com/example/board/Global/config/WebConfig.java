@@ -3,12 +3,14 @@ package com.example.board.Global.config;
 import com.example.board.auth.LoginUserResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
@@ -19,6 +21,8 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 public class WebConfig implements WebMvcConfigurer {
     private final LoginUserResolver loginUserResolver;
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
 
     @Override
@@ -30,6 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations(Paths.get(uploadDir).toAbsolutePath().normalize().toUri().toString());
     }
 }

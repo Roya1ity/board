@@ -19,6 +19,8 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @EntityGraph(attributePaths = {"board","user"})
     Page<Post> findByBoardId(Long boardId, Pageable pageable);
 
+    List<Post> findByBoardId(Long boardId);
+
     @Query("select distinct p from Post p " +
             "join fetch p.board " +
             "join fetch p.user " +
@@ -29,4 +31,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     @Query("select p.user.id from Post p where p.id = :id")
     Optional<Long> findByUserIdById(Long id);
+
+
+    void deleteByBoardId(Long boardId);
 }

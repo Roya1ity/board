@@ -62,14 +62,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             res.setId(user.getId());
             res.setEmail(user.getEmail());
             res.setNick(user.getNick());
-            //res.setRole(userDetails.getAuthorities());
+            res.setRole(user.getRole().name());
             res.setAccessToken(BEARER+accessToken);
             res.setRefreshToken(tokenPair.getToken());
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
             response.addHeader(HttpHeaders.SET_COOKIE,refreshCookieFactory.create(tokenPair.getToken(),tokenPair.getExpireIn()).toString());
-            objectMapper.writeValue(response.getWriter(),res);
+            response.sendRedirect("/");
         }
         catch (AuthenticationException e) {
             throw new UnauthorizedException(ErrorCode.LOGIN_REQUIRED);

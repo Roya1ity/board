@@ -5,7 +5,6 @@ import com.example.board.Global.Entity.Post;
 import com.example.board.Global.Entity.User;
 import com.example.board.Global.exception.BusinessException;
 import com.example.board.Global.exception.ErrorCode;
-import com.example.board.auth.LoginUserId;
 import com.example.board.auth.UserRepository;
 import com.example.board.comment.dto.CommentCreateRequest;
 import com.example.board.comment.dto.CommentResponse;
@@ -61,9 +60,10 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentResponse> getComments(Long postId, Pageable page) {
+    public Page<CommentResponse> getComments(Long loginUserId, Long postId, Pageable page) {
 
-        Page<CommentResponse> res = commentRepository.findByPostId(postId,page).map(Comment::toResponse);
+        Page<CommentResponse> res = commentRepository.findByPostIdAndParentIdIsNullOrderByCreatedAtAsc(postId,page)
+                .map(comment -> Comment.toResponse(comment, loginUserId));
 
         return res;
     }
@@ -84,9 +84,7 @@ public class CommentService {
     @Transactional
     public void delete(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(()-> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
-
-        if (!comment.isDeleted()) {
-            comment.setDeleted(true);
-        }
+        comment.setDeleted(true);
+        commentRepository.save(comment);
     }
 }

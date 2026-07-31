@@ -23,10 +23,10 @@ import java.util.UUID;
 public class FileStorageService {
 
     private static final Set<String> ALLOWED_CONTENT_TYPES =
-            Set.of("image/png","image/jpeg","image/gif","image/webp");
+            Set.of("image/png","image/jpeg","image/gif","image/webp","image/jpg");
 
     private static final Set<String> ALLOWED_EXTENSIONS =
-            Set.of("png","jpeg","gif","webp");
+            Set.of("png","jpeg","gif","webp","jpg");
 
     private final Path uploadPath;
 

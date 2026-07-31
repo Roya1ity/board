@@ -36,9 +36,9 @@ public class PostImage {
     @Column(nullable = false)
     private int sortOrder;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private static final String URL_PREFIX = "/images/";
 

@@ -80,7 +80,11 @@ public class AuthService {
             res.setId(userDetails.getId());
             res.setEmail(userDetails.getUsername());
             res.setNick(userDetails.getNick());
-            //res.setRole(userDetails.getAuthorities());
+            res.setRole(userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .map(Object::toString)
+                    .map(role -> role.replace("ROLE_", ""))
+                    .orElse(null));
             res.setAccessToken(BEARER+accessToken);
             res.setRefreshToken(refreshToken);
         }
@@ -146,6 +150,10 @@ public class AuthService {
         TokenResponse res = new TokenResponse();
         res.setAccessToken(newAccessToken);
         res.setRefreshToken(refreshToken);
+        res.setId(user.getId());
+        res.setEmail(user.getEmail());
+        res.setNick(user.getNick());
+        res.setRole(user.getRole().name());
 
         return res;
     }

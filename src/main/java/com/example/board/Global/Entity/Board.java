@@ -29,9 +29,9 @@ public class Board {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     @Builder.Default
@@ -43,7 +43,7 @@ public class Board {
         dto.setId(board.getId());
         dto.setName(board.getName());
         dto.setDescription(board.getDescription());
-        dto.setCreateAt(board.getCreateAt().toString());
+        dto.setCreateAt(board.getCreatedAt().toString());
 
         return dto;
     }

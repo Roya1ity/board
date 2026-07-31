@@ -57,6 +57,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 처리
 
                 .authorizeHttpRequests(auth-> auth
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/styles.css",
+                                "/app.js",
+                                "/favicon.ico",
+                                "/images/**"
+                        ).permitAll()
                         // 공개 : 인증/회원가입/로그아웃/게시글 조회
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/oauth/**").permitAll()

@@ -86,9 +86,14 @@ public class Comment {
     }
 
     public static CommentResponse toResponse(Comment comment) {
+        return toResponse(comment, null);
+    }
+
+    public static CommentResponse toResponse(Comment comment, Long loginUserId) {
         List<CommentResponse> children = comment.isRoot()
-                ? comment.getChildren().stream().map((Comment::toResponse)).toList()
+                ? comment.getChildren().stream().map(child -> Comment.toResponse(child, loginUserId)).toList()
                 : List.of();
+        boolean owner = loginUserId != null && comment.isAuthor(loginUserId);
 
         return new CommentResponse(
                 comment.getId(),
@@ -96,6 +101,8 @@ public class Comment {
                 comment.isDeleted() ? DELETED_CONTENT : comment.getContent(),
                 comment.isDeleted(),
                 comment.getCreatedAt(),
+                owner && !comment.isDeleted(),
+                owner && !comment.isDeleted(),
                 children
         );
     }

@@ -42,11 +42,13 @@ public class CommentController {
 
     @GetMapping("/{postId}/list")
     public Page<CommentResponse> getComments(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long postId,
             @PageableDefault(size = 10, sort = "createdAt",direction = Sort.Direction.DESC) Pageable page
     ) {
 
-        return commentService.getComments(postId,page);
+        Long loginUserId = userDetails == null ? null : userDetails.getId();
+        return commentService.getComments(loginUserId,postId,page);
     }
 
     @PreAuthorize("@commentSecurity.isAuthor(#commentId, authentication.principal)")

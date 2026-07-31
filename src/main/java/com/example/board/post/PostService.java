@@ -11,6 +11,7 @@ import com.example.board.Global.exception.NotFoundUserException;
 import com.example.board.Global.exception.UnauthorizedException;
 import com.example.board.auth.UserRepository;
 import com.example.board.board.BoardRepository;
+import com.example.board.comment.CommentRepository;
 import com.example.board.post.dto.PostRequest;
 import com.example.board.post.dto.PostDTO;
 import jakarta.validation.Valid;
@@ -31,6 +32,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final FileStorageService fileStorageService;
 
     @Transactional
@@ -122,7 +124,8 @@ public class PostService {
 
     @Transactional
     public IngestResult delete(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(()->new NotFoundUserException(ErrorCode.POST_NOT_FOUND));
+        commentRepository.deleteByPostId(id);
+        postRepository.deleteById(id);
 //        validateAuthor(post,loginUserId);
 //        User user = post.getUser();
 //
@@ -130,9 +133,8 @@ public class PostService {
 //            throw new ForbidenException(ErrorCode.POST_ACCESS_DENIED);
 //        }
 
-        postRepository.deleteById(id);
 
-        return new IngestResult("OK","삭제완료");
+        return new IngestResult("OK","삭제 완료");
     }
 
     private void validateAuthor(Post post, Long userid) {
