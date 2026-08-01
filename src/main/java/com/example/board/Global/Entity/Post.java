@@ -2,6 +2,7 @@ package com.example.board.Global.Entity;
 
 import com.example.board.post.dto.PostDTO;
 import com.example.board.post.dto.PostImageResponse;
+import com.example.board.reaction.dto.ReactionResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
@@ -57,7 +58,7 @@ public class Post {
     @LastModifiedDate
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public static PostDTO toDTO(Post post,Long loginUserId) {
+    public static PostDTO toDTO(Post post,Long loginUserId,ReactionResponse reaction) {
         boolean owner = loginUserId != null && post.isAuthor(loginUserId);
 
         PostDTO dto = new PostDTO();
@@ -69,11 +70,35 @@ public class Post {
         dto.setCreateAt(post.getCreatedAt().toString());
         dto.setCanEdit(owner);
         dto.setCanDelete(owner);
+        dto.setLike(reaction.getLikeCount());
+        dto.setDislike(reaction.getDislikeCount());
+        dto.setMyReaction(reaction.getMyReaction());
 
         List<PostImageResponse> images = post.images.stream().map(PostImage::toDTO).toList();
         dto.setImages(images);
         dto.setViewCount(post.getViewCount());
 
+        return dto;
+    }
+
+    public static PostDTO toDTO(Post post,ReactionResponse reaction) {
+
+        PostDTO dto = new PostDTO();
+        dto.setId(post.getId());
+        dto.setTitle(post.getTitle());
+        dto.setUser(post.getUser().getNick());
+        dto.setBoard(post.getBoard().getName());
+        dto.setBody(post.getBody());
+        dto.setCreateAt(post.getCreatedAt().toString());
+        dto.setCanEdit(false);
+        dto.setCanDelete(false);
+        dto.setLike(reaction.getLikeCount());
+        dto.setDislike(reaction.getDislikeCount());
+        dto.setMyReaction(reaction.getMyReaction());
+
+        List<PostImageResponse> images = post.images.stream().map(PostImage::toDTO).toList();
+        dto.setImages(images);
+        dto.setViewCount(post.getViewCount());
         return dto;
     }
 

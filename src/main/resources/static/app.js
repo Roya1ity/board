@@ -45,7 +45,6 @@ function bindEvents() {
 }
 
 async function restoreSession(force = false) {
-  if (state.token && !force) return true;
   try {
     const res = await fetch("/api/auth/reissue", { method: "POST", credentials: "include" });
     if (!res.ok) {
@@ -242,7 +241,7 @@ async function selectPost(postId) {
 
 function renderPostDetail(post) {
   els.postDetailTitle.textContent = post.title || "포스트 내용";
-  els.postMeta.textContent = `${post.board || ""} / ${post.user || ""} / 조회 ${post.viewCount ?? 0}`;
+  els.postMeta.textContent = `${post.board || ""} / ${post.user || ""} / 조회 ${post.viewCount ?? 0} / 좋아요 ${post.like ?? 0} / 싫어요 ${post.dislike ?? 0}`;
   renderPostActions(post);
   els.postDetail.classList.remove("empty");
   const images = Array.isArray(post.images) && post.images.length
@@ -268,11 +267,34 @@ function renderPostActions(post) {
   els.postMetaActions.innerHTML = post.canEdit || post.canDelete
     ? `${post.canEdit ? `<button class="button ghost small" type="button" data-edit-post="${post.id}">수정</button>` : ""}
        ${post.canDelete ? `<button class="button danger small" type="button" data-delete-post="${post.id}">삭제</button>` : ""}`
-    : "";
+    : `<button class="button reaction small ${post.myReaction === "LIKE" ? "is-active" : ""}" type="button" data-post-reaction="LIKE">좋아요</button>
+       <button class="button reaction small ${post.myReaction === "DISLIKE" ? "is-active" : ""}" type="button" data-post-reaction="DISLIKE">싫어요</button>`;
   const editButton = els.postMetaActions.querySelector("[data-edit-post]");
   const deleteButton = els.postMetaActions.querySelector("[data-delete-post]");
   if (editButton) editButton.addEventListener("click", () => editPost(post));
   if (deleteButton) deleteButton.addEventListener("click", () => deletePost(post.id));
+  els.postMetaActions.querySelectorAll("[data-post-reaction]").forEach((button) => {
+    button.addEventListener("click", () => reactToPost(post.id, button.dataset.postReaction));
+  });
+}
+
+async function reactToPost(postId, type) {
+  if (!await ensureAuthenticated()) return;
+
+  try {
+    const reaction = await api(`/api/reation/post/${postId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type }),
+      authRequired: true,
+    });
+    state.selectedPost.like = reaction.likeCount;
+    state.selectedPost.dislike = reaction.dislikeCount;
+    state.selectedPost.myReaction = reaction.myReaction;
+    renderPostDetail(state.selectedPost);
+  } catch (err) {
+    showNotice(err.message);
+  }
 }
 
 async function loadComments(page = 0) {
@@ -304,6 +326,12 @@ function renderComments(comments) {
   els.commentList.querySelectorAll("[data-delete-comment]").forEach((button) => {
     button.addEventListener("click", () => deleteComment(button.dataset.deleteComment));
   });
+  els.commentList.querySelectorAll("[data-comment-reaction]").forEach((button) => {
+    button.addEventListener("click", () => reactToComment(
+      button.dataset.commentId,
+      button.dataset.commentReaction,
+    ));
+  });
 }
 
 function renderComment(comment, reply) {
@@ -311,12 +339,20 @@ function renderComment(comment, reply) {
   return `
     <div class="comment ${reply ? "reply" : ""}">
       <div class="comment-head">
-        <strong>${escapeHtml(comment.author || "작성자 없음")}</strong>
+        <div class="comment-author-line">
+          <strong>${escapeHtml(comment.author || "작성자 없음")}</strong>
+          <span class="reaction-counts">좋아요 ${comment.likeCount ?? 0} · 싫어요 ${comment.dislikeCount ?? 0}</span>
+        </div>
           <div class="comment-meta-actions">
             <span class="muted">${formatDate(comment.createdAt)}</span>
             <div class="comment-owner-actions">
-            ${comment.canEdit ? `<button class="button ghost small" type="button" data-edit-comment="${comment.id}">수정</button>` : ""}
-            ${comment.canDelete ? `<button class="button danger small" type="button" data-delete-comment="${comment.id}">삭제</button>` : ""}
+            ${comment.canEdit || comment.canDelete
+              ? `${comment.canEdit ? `<button class="button ghost small" type="button" data-edit-comment="${comment.id}">수정</button>` : ""}
+                 ${comment.canDelete ? `<button class="button danger small" type="button" data-delete-comment="${comment.id}">삭제</button>` : ""}`
+              : !comment.deleted
+                ? `<button class="button reaction small ${comment.myReaction === "LIKE" ? "is-active" : ""}" type="button" data-comment-id="${comment.id}" data-comment-reaction="LIKE">좋아요</button>
+                   <button class="button reaction small ${comment.myReaction === "DISLIKE" ? "is-active" : ""}" type="button" data-comment-id="${comment.id}" data-comment-reaction="DISLIKE">싫어요</button>`
+                : ""}
           </div>
         </div>
       </div>
@@ -327,6 +363,22 @@ function renderComment(comment, reply) {
     </div>
     ${children.map((child) => renderComment(child, true)).join("")}
   `;
+}
+
+async function reactToComment(commentId, type) {
+  if (!await ensureAuthenticated()) return;
+
+  try {
+    await api(`/api/reation/comment/${commentId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type }),
+      authRequired: true,
+    });
+    await loadComments(state.commentPage);
+  } catch (err) {
+    showNotice(err.message);
+  }
 }
 
 async function editPost(post) {

@@ -1,5 +1,6 @@
 package com.example.board.post.dto;
 
+import com.example.board.reaction.ReactionType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,9 @@ public class PostDTO {
     private String body;
     private long viewCount;
     List<PostImageResponse> images;
+    private long like;
+    private long dislike;
+    private ReactionType myReaction;
     private String createAt;
     private boolean canEdit;
     private boolean canDelete;

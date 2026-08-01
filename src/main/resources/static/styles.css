@@ -429,9 +429,27 @@ textarea { resize: vertical; }
   gap: 8px;
 }
 
+.comment-author-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reaction-counts {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .comment-owner-actions {
   display: flex;
   gap: 8px;
+}
+
+.button.reaction.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
 }
 
 .comment-actions {

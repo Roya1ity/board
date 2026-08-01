@@ -10,6 +10,7 @@ import com.example.board.comment.dto.CommentCreateRequest;
 import com.example.board.comment.dto.CommentResponse;
 import com.example.board.notification.CommentCreateEvent;
 import com.example.board.post.PostRepository;
+import com.example.board.reaction.CommentReactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final CommentReactionService commentReactionService;
 
     @Transactional
     public CommentResponse create(Long loginUserId, Long postId, CommentCreateRequest req) {
@@ -63,7 +65,11 @@ public class CommentService {
     public Page<CommentResponse> getComments(Long loginUserId, Long postId, Pageable page) {
 
         Page<CommentResponse> res = commentRepository.findByPostIdAndParentIdIsNullOrderByCreatedAtAsc(postId,page)
-                .map(comment -> Comment.toResponse(comment, loginUserId));
+                .map(comment -> Comment.toResponse(
+                        comment,
+                        loginUserId,
+                        commentId -> commentReactionService.buildCommentReactionResponse(commentId, loginUserId)
+                ));
 
         return res;
     }

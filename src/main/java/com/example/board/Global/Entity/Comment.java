@@ -2,6 +2,7 @@ package com.example.board.Global.Entity;
 
 import com.example.board.comment.dto.CommentCreateRequest;
 import com.example.board.comment.dto.CommentResponse;
+import com.example.board.reaction.dto.ReactionResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.example.board.comment.dto.CommentResponse.DELETED_CONTENT;
 
@@ -86,14 +88,25 @@ public class Comment {
     }
 
     public static CommentResponse toResponse(Comment comment) {
-        return toResponse(comment, null);
+        return toResponse(comment, null, ignored -> new ReactionResponse());
     }
 
     public static CommentResponse toResponse(Comment comment, Long loginUserId) {
+        return toResponse(comment, loginUserId, ignored -> new ReactionResponse());
+    }
+
+    public static CommentResponse toResponse(
+            Comment comment,
+            Long loginUserId,
+            Function<Long, ReactionResponse> reactionProvider
+    ) {
         List<CommentResponse> children = comment.isRoot()
-                ? comment.getChildren().stream().map(child -> Comment.toResponse(child, loginUserId)).toList()
+                ? comment.getChildren().stream()
+                        .map(child -> Comment.toResponse(child, loginUserId, reactionProvider))
+                        .toList()
                 : List.of();
         boolean owner = loginUserId != null && comment.isAuthor(loginUserId);
+        ReactionResponse reaction = reactionProvider.apply(comment.getId());
 
         return new CommentResponse(
                 comment.getId(),
@@ -103,6 +116,9 @@ public class Comment {
                 comment.getCreatedAt(),
                 owner && !comment.isDeleted(),
                 owner && !comment.isDeleted(),
+                reaction.getLikeCount(),
+                reaction.getDislikeCount(),
+                reaction.getMyReaction(),
                 children
         );
     }

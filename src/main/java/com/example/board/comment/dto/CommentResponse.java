@@ -1,9 +1,6 @@
 package com.example.board.comment.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.example.board.reaction.ReactionType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +13,9 @@ public record CommentResponse(
         LocalDateTime createdAt,
         boolean canEdit,
         boolean canDelete,
+        long likeCount,
+        long dislikeCount,
+        ReactionType myReaction,
         List<CommentResponse> children
 ) {
     public static final String DELETED_CONTENT = "삭제된 댓글입니다.";

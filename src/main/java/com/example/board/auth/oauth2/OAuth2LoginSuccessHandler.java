@@ -25,6 +25,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import static com.example.board.auth.jwt.JwtAuthenticationFilter.BEARER;
 
@@ -48,7 +49,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
 
         String provider = oauth2Token.getAuthorizedClientRegistrationId();
-        String providerId = provider+"_"+authentication.getName();
+        String providerId = provider.toUpperCase(Locale.ROOT) + "_" + authentication.getName();
 
         User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new UnauthorizedException(ErrorCode.LOGIN_FAILED));
