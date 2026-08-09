@@ -1,21 +1,17 @@
-# Board React Frontend
+# Board Nginx Frontend
 
-## 로컬 개발
+This image serves the same browser UI as `src/main/resources/static`.
 
-백엔드를 `localhost:8099`에서 실행한 후 다음 명령을 사용한다.
+The following files must remain byte-for-byte synchronized with the Spring Boot static resources:
 
-```bash
-npm install
-npm run dev
-```
+- `index.html`
+- `styles.css`
+- `app.js`
 
-Vite 개발 서버가 `/api`, `/images`, OAuth 요청을 백엔드로 프록시한다.
-
-## 운영 빌드
+Build and run it through the repository-level Compose configuration:
 
 ```bash
-npm install
-npm run build
+docker compose up -d --build frontend2
 ```
 
-`dist/`를 Nginx에서 제공하거나 포함된 `Dockerfile`을 빌드한다. `nginx.conf`에서 백엔드 upstream 이름은 `backend:8099`로 가정한다. 실제 배포 환경에 맞게 변경한다.
+Nginx proxies `/api`, `/images`, `/oauth2`, and `/login/oauth2` requests to the backend container.
