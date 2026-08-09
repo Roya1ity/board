@@ -6,6 +6,17 @@ status: current
 
 # LLM Context
 
+## Frontend deployment
+
+- `src/main/resources/static` is the canonical browser UI.
+- The Nginx frontend mirrors its `index.html`, `styles.css`, and `app.js` files.
+- Nginx proxies `/api`, `/images`, and OAuth routes to the backend container.
+
+## Database configuration
+
+- The datasource reads `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, and `DB_PASSWORD` from the environment.
+- Local execution defaults to `localhost:3306`, while Compose supplies the `board-mysql` hostname.
+
 ## 프로젝트 정체성
 
 Java 21/Spring Boot 3.5.14/MySQL 기반 커뮤니티 백엔드다. 기능 패키지는 auth, board, post, comment, reaction, notification, user이며 JPA 엔티티는 `Global.Entity`에 있다. 정적 vanilla JS 클라이언트가 포함되어 있으나 향후 별도 프론트엔드 요구사항의 출발점일 뿐이다.

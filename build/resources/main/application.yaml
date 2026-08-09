@@ -34,9 +34,9 @@ spring:
             user-name-attribute: id
 
   datasource:
-    url: jdbc:mysql://localhost:3306/board?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:board}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -85,4 +85,3 @@ logging:
     com.example.board: DEBUG
     org.springframework.web.client: DEBUG
     org.springframework.security.web.FilterChainProxy: DEBUG
-
