@@ -22,7 +22,7 @@ services:
     volumes:
       - uploads:/app/uploads
     networks:
-      - board-net
+      - board-db-net
     healthcheck:
       test: ["CMD","curl","-fsS","http://localhost:8099/api/board/all"]
       interval: 60s
@@ -43,7 +43,7 @@ services:
     ports:
       - "3000:80"
     networks:
-      - board-net
+      - board-db-net
     healthcheck:
       test: ["CMD","ping","127.0.0.1"]
       interval: 60s
@@ -64,7 +64,7 @@ services:
     ports:
       - "80:80"
     networks:
-      - board-net
+      - board-db-net
     healthcheck:
       test: [ "CMD","ping","127.0.0.1" ]
       interval: 60s
@@ -74,7 +74,7 @@ services:
     restart: unless-stopped
 
 networks:
-  board-net:
+  board-db-net:
     external: true
 
 volumes:
