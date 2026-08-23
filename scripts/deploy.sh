@@ -33,6 +33,7 @@ if ! swapon --show | grep -q /swapfile; then
   echo "  swap 2G 활성화"
 fi
 
+
 echo "빌드"
 docker compose build app
 docker compose build frontend
