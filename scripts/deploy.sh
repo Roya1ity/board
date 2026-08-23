@@ -59,6 +59,9 @@ echo "빌드"
 docker compose build app
 docker compose build frontend
 
+echo "기존 Compose 컨테이너 정리"
+docker compose down --remove-orphans
+
 echo "빌드 후 재기동 + 헬스체크까지"
 docker compose up -d --wait
 
