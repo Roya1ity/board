@@ -40,3 +40,4 @@ client_secret_219435128455-p9vnekfq61r6t7f4k4o9i4ji0ktc0f88.apps.googleuserconte
 *.pem
 /.ssh/
 .prod.env
+./uploads
