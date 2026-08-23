@@ -63,8 +63,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     }
 
-    private void verifySocialEmail(String email) {
-        userRepository.findByEmail(email).ifPresent(
+    private void verifySocialEmail(String email,String provider) {
+        userRepository.findByEmailAndProvider(email,provider).ifPresent(
                 (user) -> {
                     throw new OAuth2DuplicateEmailException();
                 }
@@ -89,7 +89,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
 
-        verifySocialEmail(email);
+        verifySocialEmail(email,authProvider.toString());
         newUser.setEmail(email);
         newUser.setPw(passwordEncoder.encode(UUID.randomUUID().toString()));
         newUser.setProvider(authProvider.toString());

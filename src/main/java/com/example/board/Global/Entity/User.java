@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 
 @Entity
-@Table(name = "Auth")
+@Table(name = "Auth",
+        uniqueConstraints = @UniqueConstraint(name = "uk_auth",columnNames = {"email","provider"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email", nullable = false,unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "pw", nullable = false)

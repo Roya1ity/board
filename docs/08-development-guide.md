@@ -39,6 +39,13 @@ status: current
 
 서버 기본 포트는 `8099`, 정적 데모는 `http://localhost:8099/`다.
 
+## Lightsail 배포 메모리
+
+- `scripts/deploy.sh`는 Docker 이미지 빌드 전에 `/swapfile` 2GB를 확인하고, 비활성 상태이면 다시 생성해 활성화한다.
+- 생성된 swap은 `/etc/fstab`에 한 번만 등록되어 인스턴스 재부팅 후에도 유지된다.
+- 배포 계정은 비대화형 GitHub Actions 실행 중 `sudo` 암호를 입력할 수 없으므로 passwordless sudo 권한이 필요하다.
+- swap 구성 후 `free -h`와 `swapon --show`를 출력해 Actions 로그에서 적용 여부를 확인한다.
+
 ## 파일 업로드
 
 - 디렉터리는 시작 시 자동 생성된다.

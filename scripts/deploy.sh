@@ -27,12 +27,33 @@ timeout 60 bash -c \
 echo "mysql8 ready"
 
 echo "빌드 보장을 위한 메모리 스왑"
-if ! swapon --show | grep -q /swapfile; then
-  sudo fallocate -l 2G /swapfile 2>/dev/null || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
-  sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
-  echo "  swap 2G 활성화"
-fi
+SWAP_FILE=/swapfile
 
+if ! sudo swapon --show=NAME --noheadings | awk '{$1=$1};1' | grep -Fxq "$SWAP_FILE"; then
+  echo "${SWAP_FILE} 생성 및 활성화"
+  sudo -n true
+
+  # 이전 배포에서 불완전하게 생성된 비활성 swapfile도 다시 구성한다.
+  sudo rm -f "$SWAP_FILE"
+  if ! sudo fallocate -l 2G "$SWAP_FILE"; then
+    echo "fallocate 미지원: dd로 swapfile 생성"
+    sudo dd if=/dev/zero of="$SWAP_FILE" bs=1M count=2048 status=progress
+  fi
+
+  sudo chmod 600 "$SWAP_FILE"
+  sudo mkswap "$SWAP_FILE"
+  sudo swapon "$SWAP_FILE"
+
+  if ! grep -Fq "$SWAP_FILE none swap sw 0 0" /etc/fstab; then
+    echo "$SWAP_FILE none swap sw 0 0" | sudo tee -a /etc/fstab >/dev/null
+  fi
+
+  echo "swap 2G 활성화 완료"
+else
+  echo "${SWAP_FILE}이 이미 활성화되어 있음"
+fi
+free -h
+sudo swapon --show
 
 echo "빌드"
 docker compose build app
