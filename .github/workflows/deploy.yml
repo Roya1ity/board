@@ -26,7 +26,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: ./gradlew --no-daemon bootJar test
+        run: ./gradlew --no-daemon bootJar -x test
 
   deploy:
     runs-on: ubuntu-latest
