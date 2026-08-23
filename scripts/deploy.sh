@@ -1,7 +1,8 @@
 set -euo pipefail
 
 echo ".env 생성"
-cat > /env << EOF
+chmod +x .env
+cat > /.env << EOF
 KAKAO_REST_API=${KAKAO_REST_API}
 KAKAO_SECRET=${KAKAO_SECRET}
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
