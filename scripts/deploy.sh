@@ -62,7 +62,7 @@ echo "이미지 pull"
 docker compose pull
 
 echo "컨테이너 실행 및 헬스체크까지 대기"
-docker compose up -d --nobuild --wait
+docker compose up -d --no-build --wait
 docker logout ghcr.io
 
 echo "이전 이미지 정리 및 최종 상태보고"
