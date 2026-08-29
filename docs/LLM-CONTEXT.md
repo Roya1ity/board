@@ -11,6 +11,7 @@ status: current
 - `src/main/resources/static` is the canonical browser UI.
 - The Nginx frontend mirrors its `index.html`, `styles.css`, and `app.js` files.
 - Nginx proxies `/api`, `/images`, and OAuth routes to the backend container.
+- GitHub Actions publishes backend and frontend images under the lowercase GHCR namespace `ghcr.io/roya1ity`.
 
 ## Database configuration
 
