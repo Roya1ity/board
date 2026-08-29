@@ -68,6 +68,7 @@ public class SecurityConfig {
                         // 공개 : 인증/회원가입/로그아웃/게시글 조회
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/oauth/**").permitAll()
+                        .requestMatchers("/oauth2/**","/login/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/board/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/post/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comment/**").permitAll()
