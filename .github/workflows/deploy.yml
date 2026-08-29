@@ -41,7 +41,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/skawns521/board:latest
+          tags: ghcr.io/Roya1ity/board:latest
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
 
@@ -50,7 +50,7 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: ghcr.io/skawns521/board-fe-react
+          tags: ghcr.io/Roya1ity/board-fe-react
           cache-from: type=gha,scope=fer
           cache-to: type=gha,mode=max,scope=fer
 
