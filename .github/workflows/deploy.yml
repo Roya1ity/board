@@ -73,6 +73,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           GHCR_USER: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_PUBLIC_BASE_URL: ${{ secrets.APP_PUBLIC_BASE_URL }}
 
         with:
           host: ${{ secrets.LIGHTSAIL_HOST }}
