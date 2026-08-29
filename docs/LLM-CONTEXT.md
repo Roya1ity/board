@@ -13,6 +13,7 @@ status: current
 - Nginx proxies `/api`, `/images`, and OAuth routes to the backend container.
 - GitHub Actions publishes backend and frontend images under the lowercase GHCR namespace `ghcr.io/roya1ity`.
 - Production deployment passes `KAKAO_CALLBACK` from the matching GitHub Actions secret into the container `.env` file.
+- The frontend container health check requests its local Nginx root page with BusyBox `wget`.
 
 ## Database configuration
 
