@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    image: board:latest
+    image: ghcr.io/roya1ity/board:latest #board:latest
     container_name: board-back-end
     env_file:
       - .env
@@ -35,7 +35,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: board-fe-react
+    image: ghcr.io/roya1ity/board-fe-react #board-fe-react
     container_name: board-fe-react
     depends_on:
       app:
