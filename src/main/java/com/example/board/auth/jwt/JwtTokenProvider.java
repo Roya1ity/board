@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -30,24 +31,38 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + accessTokenValiditySeconds * 1000);
 
-        return Jwts.builder().subject(userEmail)
+        return Jwts.builder()
+                .subject(userEmail)
+                .id(UUID.randomUUID().toString())
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)
                 .compact();
     }
 
-    public String getUserEmail(String token) {
-        String subject = Jwts.parser()
+    public io.jsonwebtoken.Claims parserClaims(String token) {
+        return Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
+    }
+
+    public String getUserEmail(String token) {
+        String subject = parserClaims(token).getSubject();
 
         log.debug("토큰으로부터 ID 추출: {}",subject);
 
         return subject;
+    }
+
+    public String getJti(String token) {
+        return parserClaims(token).getId();
+    }
+
+    public long getRemainingSeconds(String token) {
+        long remainMillis = parserClaims(token).getExpiration().getTime() - System.currentTimeMillis();
+        return Math.max(1,remainMillis/1000);
     }
 
     public boolean validateToken(String token) {

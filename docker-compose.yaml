@@ -7,6 +7,10 @@ services:
 
     image: ghcr.io/roya1ity/board:latest #board:latest
     container_name: board-back-end
+    depends_on:
+      redis:
+        condition: service_healthy
+
     env_file:
       - .env
     environment:
@@ -18,6 +22,8 @@ services:
       APP_UPLOAD_DIR: ${APP_UPLOAD_DIR:-/app/uploads}
       APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL}
       TZ: Asia/Seoul
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "8099:8099"
     volumes:
@@ -31,6 +37,20 @@ services:
       retries: 10
       start_period: 40s
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: board-redis
+    command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "noeviction"]
+    networks:
+      - board-db-net
+    healthcheck:
+      test: ["CMD","redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    restart: unless-stopped
+
 
   frontend:
     build:

@@ -36,7 +36,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisRefreshTokenStore redisRefreshTokenStore;
+    private final RedisTokenDenylist redisTokenDenylist;
 
     @Value("${jwt.access-token-validity-seconds}")
     private long accessTokenValiditySeconds;
@@ -99,20 +100,26 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(String refreshToken) {
-        refreshTokenRepository.findByToken(refreshToken)
-                .ifPresent(saved -> refreshTokenRepository.deleteByToken(saved.getToken()));
+    public void logout(String refreshToken, String accessToken) {
+        redisRefreshTokenStore.deleteByToken(refreshToken);
+        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            redisTokenDenylist.deny(
+                    jwtTokenProvider.getJti(accessToken),
+                    jwtTokenProvider.getRemainingSeconds(accessToken));
+        }
     }
 
     @Transactional
     public String issueRefreshToken(Long userId) {
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenValiditySeconds);
-        refreshTokenRepository.findByUserId(userId)
-                .ifPresentOrElse(
-                        exist -> exist.update(token,expiresAt),
-                        ()-> refreshTokenRepository.save((new RefreshToken(userId,token,expiresAt)))
-                );
+        redisRefreshTokenStore.save(userId,token,refreshTokenValiditySeconds);
+
+//        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenValiditySeconds);
+//        refreshTokenRepository.findByUserId(userId)
+//        .ifPresentOrElse(
+//                exist -> exist.update(token,expiresAt),
+//                ()-> refreshTokenRepository.save((new RefreshToken(userId,token,expiresAt)))
+//        );
 
         return token;
     }
@@ -120,12 +127,14 @@ public class AuthService {
     @Transactional
     public TokenPair issueRefreshTokenPair(Long userId) {
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenValiditySeconds);
-        refreshTokenRepository.findByUserId(userId)
-                .ifPresentOrElse(
-                        exist -> exist.update(token,expiresAt),
-                        ()-> refreshTokenRepository.save((new RefreshToken(userId,token,expiresAt)))
-                );
+        redisRefreshTokenStore.save(userId,token,refreshTokenValiditySeconds);
+
+//        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenValiditySeconds);
+//        refreshTokenRepository.findByUserId(userId)
+//                .ifPresentOrElse(
+//                        exist -> exist.update(token,expiresAt),
+//                        ()-> refreshTokenRepository.save((new RefreshToken(userId,token,expiresAt)))
+//                );
 
         TokenPair tokenPair = new TokenPair();
         tokenPair.setToken(token);
@@ -135,14 +144,16 @@ public class AuthService {
 
     @Transactional
     public TokenResponse reIssueToken(String refreshToken) {
-        RefreshToken saved = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
-        if (saved.isExpired()) {
-            refreshTokenRepository.deleteByToken(refreshToken);
-            throw new UnauthorizedException(ErrorCode.LOGIN_REQUIRED);
-        }
+//        RefreshToken saved = refreshTokenRepository.findByToken(refreshToken)
+//                .orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
+//        if (saved.isExpired()) {
+//            refreshTokenRepository.deleteByToken(refreshToken);
+//            throw new UnauthorizedException(ErrorCode.LOGIN_REQUIRED);
+//        }
+        Long userId = redisRefreshTokenStore.findUserId(refreshToken)
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN));
 
-        User user = userRepository.findById(saved.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
 
         String newAccessToken = jwtTokenProvider.createToken(user.getEmail());

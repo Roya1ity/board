@@ -9,6 +9,7 @@ import com.example.board.Global.exception.ErrorCode;
 import com.example.board.Global.exception.ForbidenException;
 import com.example.board.Global.exception.NotFoundUserException;
 import com.example.board.Global.exception.UnauthorizedException;
+import com.example.board.auth.CustomUserDetails;
 import com.example.board.auth.UserRepository;
 import com.example.board.board.BoardRepository;
 import com.example.board.post.PostRepository;
@@ -17,6 +18,7 @@ import com.example.board.post.dto.PostRequest;
 import com.example.board.user.dto.UserProfileDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +31,8 @@ public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
 
-    public UserProfileDTO me(Long loginUserId) {
-        User user = userRepository.findById(loginUserId).orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
+    public UserProfileDTO me(CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(()->new UnauthorizedException(ErrorCode.LOGIN_REQUIRED));
 
         UserProfile userProfile = userProfileRepository.findByUser(user).orElseThrow(()->new NotFoundUserException(ErrorCode.USER_NOT_FOUND));
 

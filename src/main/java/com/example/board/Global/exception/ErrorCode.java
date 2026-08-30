@@ -24,6 +24,8 @@ public enum ErrorCode {
     INVALID_INPUT(HttpStatus.BAD_REQUEST,"잘못 된 입력"),
     INVALID_BOARD_ID(HttpStatus.BAD_REQUEST,"해당 Board ID는 삭제할 수 없음"),
     INVALID_OAUTH_STATE(HttpStatus.UNAUTHORIZED,"정상적인 인증요청이 아님"),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 refresh token입니다. 다시 로그인하세요."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "잘못 된 refresh token입니다."),
 
     INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST,"지원하지 않는 파일형식"),
     INVALID_FILE_UPLOADDIR(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드 디렉토리 초기화 실패"),

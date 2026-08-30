@@ -50,9 +50,15 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logdout(@CookieValue(name = "refreshToken",required = false) String refreshToken) {
+    public ResponseEntity<Void> logdout(@CookieValue(name = "refreshToken",required = false) String refreshToken,
+                                        @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization
+    ) {
+        String accessToken = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            accessToken = authorization.substring("Beare ".length());
+        }
         if (refreshToken != null) {
-            authService.logout(refreshToken);
+            authService.logout(refreshToken,accessToken);
         }
 
         ResponseCookie cookie = refreshCookieFactory.expire();

@@ -1,9 +1,11 @@
 package com.example.board.user;
 
+import com.example.board.auth.CustomUserDetails;
 import com.example.board.auth.LoginUserId;
 import com.example.board.user.dto.UserProfileDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +18,8 @@ public class UserProfileController {
 
 
     @GetMapping("/me")
-    public UserProfileDTO me(@LoginUserId Long loginUserId) {
+    public UserProfileDTO me(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        return userProfileService.me(loginUserId);
+        return userProfileService.me(userDetails);
     }
 }
