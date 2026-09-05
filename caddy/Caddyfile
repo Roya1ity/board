@@ -1,0 +1,11 @@
+{$SITE_ADDRESS:http://localhost}{
+    reverse_proxy frontend:80{
+        header_up X-Forwarded-port {http.request.local.port}
+    }
+}
+
+http://54.116.185.112 {
+    revers_proxy frontend:80{
+        header_up X_Forwarded-port {http.request.local.port}
+    }
+}
